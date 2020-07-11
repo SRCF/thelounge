@@ -12,6 +12,17 @@ const currentFetchPromises = new Map();
 const imageTypeRegex = /^image\/.+/;
 const mediaTypeRegex = /^(audio|video)\/.+/;
 
+const SocksProxyAgent = require("socks-proxy-agent");
+
+const agent_ = new SocksProxyAgent({
+	host: "voyager.malc.org.uk",
+});
+
+const agent = {
+	http: agent_,
+	https: agent_,
+};
+
 module.exports = function (client, chan, msg) {
 	if (!Helper.config.prefetch) {
 		return;
@@ -373,6 +384,7 @@ function fetch(uri, headers) {
 
 		try {
 			const gotStream = got.stream(uri, {
+				agent: agent,
 				retry: 0,
 				timeout: 5000,
 				headers: getRequestHeaders(headers),
